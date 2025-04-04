@@ -34,15 +34,40 @@ namespace TaskManager.API.Controllers
         [HttpGet("id/{userId}")]
         public async Task<IActionResult> GetUserById([FromRoute] Guid userId)
         {
-            await _userService.GetUserById(userId);
+            var result = await _userService.GetUserById(userId);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpGet("username/{username}")]
         public async Task<IActionResult> GetUserByUsername([FromRoute] string username)
         {
-            await _userService.GetUserByName(username);
+            var result = await _userService.GetUserByUsername(username);
+
+            return Ok(result);
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var result = await _userService.GetAllUsers();
+
+            return Ok(result);
+        }
+
+        [HttpDelete("delete/{userid}")]
+        public async Task<IActionResult> DeleteUser([FromRoute] Guid userId)
+        {
+            await _userService.DeleteUser(userId);
+
+            return Ok();
+        }
+
+        [HttpPut("update/{userId}")]
+        public async Task<IActionResult> UpdateUser
+            ([FromRoute] Guid userId, [FromBody] UserUpdateDTO userUpdateDTO)
+        {
+            await _userService.UpdateUser(userId, userUpdateDTO);
 
             return Ok();
         }
