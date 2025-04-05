@@ -26,7 +26,10 @@ namespace TaskManager.API.Services
 
             try
             {
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userDTO.PasswordHash);
+
                 var user = _mapper.Map<User>(userDTO);
+                user.PasswordHash = hashedPassword;
 
                 await _userRepository.CreateUser(user);
 
