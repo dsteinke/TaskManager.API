@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.Sqlite;
+using Microsoft.IdentityModel.Tokens;
 using System.Data;
+using System.Text;
 using TaskManager.API.Interfaces.Repositories;
 using TaskManager.API.Interfaces.Services;
 using TaskManager.API.Mapping;
@@ -14,6 +17,22 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddSingleton<IDbConnection>(sp => new SqliteConnection(connectionString));
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IAuthService, AuthService>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -32,6 +51,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
