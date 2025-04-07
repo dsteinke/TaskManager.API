@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using TaskManager.API.DTOs;
 using TaskManager.API.DTOs.Task;
 using TaskManager.API.DTOs.User;
 using TaskManager.API.Models;
@@ -16,6 +17,10 @@ namespace TaskManager.API.Mapping
 
             CreateMap<Task, TaskDTO>();
             CreateMap<TaskCreateDTO, Task>();
+
+            CreateMap<Priority, PriorityDTO>();
+
+            CreateMap<Category, CategoryDTO>();
         }
     }
 }
