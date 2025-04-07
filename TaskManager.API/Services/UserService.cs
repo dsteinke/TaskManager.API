@@ -19,9 +19,9 @@ namespace TaskManager.API.Services
 
         public async Task<bool> CreateUser(UserCreateDTO userDTO)
         {
-            var existingUser = _userRepository.GetUserByEmail(userDTO.Email);
+            var existingUser = await _userRepository.GetUserByEmail(userDTO.Email);
 
-            if (existingUser == null)
+            if (existingUser != null)
                 throw new Exception($"User with Email: {userDTO.Email} already exists");
 
             try
@@ -38,7 +38,6 @@ namespace TaskManager.API.Services
             catch (Exception)
             {
                 return false;
-                throw;
             }
         }
 
@@ -115,7 +114,6 @@ namespace TaskManager.API.Services
             catch (Exception)
             {
                 return false;
-                throw;
             }
 
         }
