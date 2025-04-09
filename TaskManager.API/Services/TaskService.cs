@@ -60,5 +60,63 @@ namespace TaskManager.API.Services
             return result;
         }
 
+        public async Task<TaskDTO> GetTaskById(Guid taskId)
+        {
+            var task = await _taskRepository.GetTaskById(taskId);
+
+            var result = _mapper.Map<TaskDTO>(task);
+
+            return result;
+        }
+
+        public async Task<List<TaskDTO>> SearchTask(TaskSearchDTO taskSearchDTO)
+        {
+            var userId = GetUserId();
+
+            var tasks = await _taskRepository.SearchTask(userId, taskSearchDTO);
+
+            var result = _mapper.Map<List<TaskDTO>>(tasks);
+
+            return result;
+        }
+
+        public async Task<bool> UpdateTask(Guid taskId, TaskUpdateDTO taskUpdateDTO)
+        {
+            try
+            {
+                var userId = GetUserId();
+
+                var result = await _taskRepository.UpdateTask(taskId, userId, taskUpdateDTO);
+
+                if (result == 0)
+                    throw new UnauthorizedAccessException("Task not found or access denied");
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteTask(Guid taskId)
+        {
+            try
+            {
+                var userId = GetUserId();
+
+                var result = await _taskRepository.DeleteTask(taskId, userId);
+
+                if (result == 0)
+                    throw new UnauthorizedAccessException("Task not found or access denied");
+
+                return true;
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
