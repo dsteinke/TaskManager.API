@@ -19,13 +19,7 @@ namespace TaskManager.API.Repositories
             var sql = @"INSERT INTO User (Id, Username, Email, PasswordHash)
                         VALUES(@Id, @Username, @Email, @PasswordHash)";
 
-            var effectedRows = await _db.ExecuteAsync(sql, new
-            {
-                user.Id,
-                user.Username,
-                user.Email,
-                user.PasswordHash
-            });
+            var effectedRows = await _db.ExecuteAsync(sql, user);
 
             return effectedRows;
         }
@@ -64,7 +58,7 @@ namespace TaskManager.API.Repositories
             var sql = @"SELECT * FROM User
                         WHERE Id = @Id";
 
-            var user = await _db.QueryFirstOrDefaultAsync<User>(sql, new { Id = userId });
+            var user = await _db.QueryFirstOrDefaultAsync<User>(sql, new { Id = userId.ToString() });
 
             return user;
         }
@@ -98,7 +92,7 @@ namespace TaskManager.API.Repositories
         {
             var sql = @"DELETE FROM User WHERE Id = @Id";
 
-            var effectedRows = await _db.ExecuteAsync(sql, new {Id = userId});
+            var effectedRows = await _db.ExecuteAsync(sql, new {Id = userId.ToString()});
 
             return effectedRows;
         }

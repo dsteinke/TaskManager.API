@@ -31,10 +31,8 @@ namespace TaskManager.API.Repositories
         public async Task<List<Task>> GetAllTasksForUser(Guid userId)
         {
             var sql = @"SELECT * FROM Task 
-                        LEFT JOIN Priority
-                        ON Task.PriorityId = Priority.Id
-                        LEFT JOIN Category
-                        ON Task.CategoryId = Category.Id
+                        LEFT JOIN Priority ON Task.PriorityId = Priority.Id
+                        LEFT JOIN Category ON Task.CategoryId = Category.Id
                         WHERE Task.UserId = @UserId;";
 
             var result = await _db.QueryAsync<Task, Priority, Category, Task>
@@ -45,9 +43,7 @@ namespace TaskManager.API.Repositories
 
                     return task;
                 },
-                new { UserId = userId.ToString() },
-                splitOn: "Id"
-                );
+                new { UserId = userId.ToString() });
 
             return result.ToList();
         }
@@ -63,7 +59,11 @@ namespace TaskManager.API.Repositories
 
         public async Task<List<Task>> SearchTask(Guid userId, TaskSearchDTO searchDTO)
         {
-            var sql = "SELECT * FROM Task WHERE UserId = @UserId";
+            var sql = @"SELECT * FROM Task 
+                        LEFT JOIN Priority ON Task.PriorityId = Priority.Id
+                        LEFT JOIN Category ON Task.CategoryId = Category.Id
+                        WHERE Task.UserId = @UserId";
+
             var parameters = new DynamicParameters();
             parameters.Add("UserId", userId.ToString());
 
@@ -96,8 +96,21 @@ namespace TaskManager.API.Repositories
                 sql += " AND CategoryId = @CategoryId";
                 parameters.Add("CategoryId", searchDTO.CategoryId.ToString());
             }
+            if (searchDTO.IsCompleted.HasValue)
+            {
+                sql += " AND IsCompleted = @IsCompleted";
+                parameters.Add("IsCompleted", searchDTO.IsCompleted);
+            }
 
-            var result = await _db.QueryAsync<Task>(sql, parameters);
+            var result = await _db.QueryAsync<Task, Priority, Category, Task>
+                (sql, (task, priority, category) =>
+                {
+                    task.Priority = priority;
+                    task.Category = category;
+
+                    return task;
+                },
+                parameters);
 
             return result.ToList();
         }
