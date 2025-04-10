@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.Sqlite;
-using Microsoft.IdentityModel.Tokens;
 using System.Data;
-using System.Text;
 using TaskManager.API;
 using TaskManager.API.Mapping;
 
@@ -23,6 +20,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
