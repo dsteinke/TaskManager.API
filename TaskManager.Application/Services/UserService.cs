@@ -4,7 +4,7 @@ using TaskManager.API.Interfaces.Repositories;
 using TaskManager.API.Interfaces.Services;
 using TaskManager.API.Models;
 
-namespace TaskManager.API.Services
+namespace TaskManager.API.Application.Services
 {
     public class UserService : IUserService
     {

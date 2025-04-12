@@ -4,7 +4,7 @@ using System.Text;
 using TaskManager.API.Interfaces.Repositories;
 using TaskManager.API.Interfaces.Services;
 using TaskManager.API.Repositories;
-using TaskManager.API.Services;
+using TaskManager.API.Application.Services;
 
 namespace TaskManager.API
 {

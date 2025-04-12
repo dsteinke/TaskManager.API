@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using TaskManager.API.DTOs.Task;
 using TaskManager.API.Interfaces.Repositories;
 using TaskManager.API.Interfaces.Services;
 using Task = TaskManager.API.Models.Task;
 
-namespace TaskManager.API.Services
+namespace TaskManager.API.Application.Services
 {
     public class TaskService : ITaskService
     {
