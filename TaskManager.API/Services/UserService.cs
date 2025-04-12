@@ -24,21 +24,14 @@ namespace TaskManager.API.Services
             if (existingUser != null)
                 throw new Exception($"User with Email: {userDTO.Email} already exists");
 
-            try
-            {
-                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userDTO.PasswordHash);
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userDTO.PasswordHash);
 
-                var user = _mapper.Map<User>(userDTO);
-                user.PasswordHash = hashedPassword;
+            var user = _mapper.Map<User>(userDTO);
+            user.PasswordHash = hashedPassword;
 
-                await _userRepository.CreateUser(user);
+            await _userRepository.CreateUser(user);
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return true;
         }
 
         public async Task<bool> DeleteUser(Guid userId)
@@ -105,17 +98,9 @@ namespace TaskManager.API.Services
             if (user == null)
                 throw new KeyNotFoundException($"No user with userId: {userId} found");
 
-            try
-            {
-                await _userRepository.UpdateUser(userId, userDTO.Username, userDTO.Email);
+            await _userRepository.UpdateUser(userId, userDTO.Username, userDTO.Email);
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
+            return true;
         }
     }
 }

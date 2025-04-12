@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace TaskManager.API
 {
@@ -12,7 +11,6 @@ namespace TaskManager.API
         {
             _next = next;
         }
-
         public async Task Invoke(HttpContext context)
         {
             try

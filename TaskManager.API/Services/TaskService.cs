@@ -33,20 +33,13 @@ namespace TaskManager.API.Services
         {
             var userId = GetUserId();
 
-            try
-            {
-                var task = _mapper.Map<Task>(taskCreateDTO);
+            var task = _mapper.Map<Task>(taskCreateDTO);
 
-                task.UserId = userId.ToString();
+            task.UserId = userId.ToString();
 
-                await _taskRepository.CreateTask(task);
+            await _taskRepository.CreateTask(task);
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return true;
         }
 
         public async Task<List<TaskDTO>> GetAllTasksForUser()
@@ -82,41 +75,26 @@ namespace TaskManager.API.Services
 
         public async Task<bool> UpdateTask(Guid taskId, TaskUpdateDTO taskUpdateDTO)
         {
-            try
-            {
-                var userId = GetUserId();
+            var userId = GetUserId();
 
-                var result = await _taskRepository.UpdateTask(taskId, userId, taskUpdateDTO);
+            var result = await _taskRepository.UpdateTask(taskId, userId, taskUpdateDTO);
 
-                if (result == 0)
-                    throw new UnauthorizedAccessException("Task not found or access denied");
+            if (result == 0)
+                throw new UnauthorizedAccessException("Task not found or access denied");
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return true;
         }
 
         public async Task<bool> DeleteTask(Guid taskId)
         {
-            try
-            {
-                var userId = GetUserId();
+            var userId = GetUserId();
 
-                var result = await _taskRepository.DeleteTask(taskId, userId);
+            var result = await _taskRepository.DeleteTask(taskId, userId);
 
-                if (result == 0)
-                    throw new UnauthorizedAccessException("Task not found or access denied");
+            if (result == 0)
+                throw new UnauthorizedAccessException("Task not found or access denied");
 
-                return true;
-
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return true;
         }
     }
 }
