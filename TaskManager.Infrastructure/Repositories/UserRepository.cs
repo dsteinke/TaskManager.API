@@ -63,7 +63,7 @@ namespace TaskManager.API.Repositories
             return user;
         }
 
-        public async Task<int> UpdateUser(Guid userId, string username, string email)
+        public async Task<int> UpdateUser(Guid userId, string? username, string? email)
         {
             var sql = new List<string>();
             var parameters = new DynamicParameters();
