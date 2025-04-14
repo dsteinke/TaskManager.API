@@ -17,9 +17,6 @@ namespace TaskManager.API.Mapping
 
             CreateMap<Task, TaskDTO>();
             CreateMap<TaskCreateDTO, Task>();
-
-            CreateMap<Priority, PriorityDTO>();
-
         }
     }
 }

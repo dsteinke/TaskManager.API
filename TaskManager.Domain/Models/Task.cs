@@ -1,4 +1,6 @@
-﻿namespace TaskManager.API.Models
+﻿using TaskManager.Domain.Enums;
+
+namespace TaskManager.API.Models
 {
     public class Task
     {
@@ -9,9 +11,8 @@
         public DateTime? DueDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public string PriorityId { get; set; }
+        public PriorityLevel Priority { get; set; }
         public bool IsCompleted { get; set; }
 
-        public Priority Priority { get; set; }
     }
 }
