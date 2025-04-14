@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using TaskManager.API.DTOs.User;
 using TaskManager.API.Interfaces.Repositories;
 using TaskManager.API.Interfaces.Services;
@@ -10,11 +12,14 @@ namespace TaskManager.API.Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService
+            (IUserRepository userRepository, IMapper mapper, IHttpContextAccessor contextAccessor)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _contextAccessor = contextAccessor;
         }
 
         public async Task<bool> CreateUser(UserCreateDTO userDTO)
@@ -34,12 +39,17 @@ namespace TaskManager.API.Application.Services
             return true;
         }
 
-        public async Task<bool> DeleteUser(Guid userId)
+        public Guid GetUserId_LoggedInUser()
         {
-            var existingUser = await _userRepository.GetUserById(userId);
+            var userId = 
+                _contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (existingUser == null)
-                throw new KeyNotFoundException($"User with userId: {userId} does not exist");
+            return Guid.TryParse(userId, out var guid) ? guid : throw new UnauthorizedAccessException("Invalid token");
+        }
+
+        public async Task<bool> DeleteUser()
+        {
+            var userId = GetUserId_LoggedInUser();
 
             await _userRepository.DeleteUser(userId);
 
@@ -91,12 +101,9 @@ namespace TaskManager.API.Application.Services
             return result;
         }
 
-        public async Task<bool> UpdateUser(Guid userId, UserUpdateDTO userDTO)
+        public async Task<bool> UpdateUser(UserUpdateDTO userDTO)
         {
-            var user = await _userRepository.GetUserById(userId);
-
-            if (user == null)
-                throw new KeyNotFoundException($"No user with userId: {userId} found");
+            var userId = GetUserId_LoggedInUser();
 
             await _userRepository.UpdateUser(userId, userDTO.Username, userDTO.Email);
 

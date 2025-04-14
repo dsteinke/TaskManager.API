@@ -1,4 +1,6 @@
-﻿namespace TaskManager.API.DTOs.Task
+﻿using TaskManager.Domain.Enums;
+
+namespace TaskManager.API.DTOs.Task
 {
     public class TaskDTO
     {
@@ -11,7 +13,6 @@
         public DateTime UpdatedAt { get; set; }
         public bool IsCompleted { get; set; }
 
-        public List<CategoryDTO?> Category { get; set; }
-        public PriorityDTO? Priority { get; set; }
+        public PriorityLevel? Priority { get; set; }
     }
 }

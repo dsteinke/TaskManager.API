@@ -10,7 +10,7 @@ namespace TaskManager.API.Interfaces.Repositories
         Task<User?> GetUserByEmail(string email);
         Task<User?> GetUserByUsername(string username);
         Task<List<User>> GetAllUsers();
-        Task<int> UpdateUser(Guid userId, string username, string email);
+        Task<int> UpdateUser(Guid userId, string? username, string? email);
         Task<int> DeleteUser(Guid userId);
 
     }

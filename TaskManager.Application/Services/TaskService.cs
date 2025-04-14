@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 using TaskManager.API.DTOs.Task;
 using TaskManager.API.Interfaces.Repositories;
 using TaskManager.API.Interfaces.Services;
@@ -12,27 +10,19 @@ namespace TaskManager.API.Application.Services
     {
         private readonly ITaskRepository _taskRepository;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IUserService _userService;
 
         public TaskService
-            (ITaskRepository taskRepository, IMapper mapper, IHttpContextAccessor contextAccessor)
+            (ITaskRepository taskRepository, IMapper mapper, IUserService userService)
         {
             _taskRepository = taskRepository;
             _mapper = mapper;
-            _contextAccessor = contextAccessor;
-        }
-
-        private Guid GetUserId()
-        {
-            var userId =
-                _contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            return Guid.TryParse(userId, out var guid) ? guid : throw new UnauthorizedAccessException("Invalid token");
+            _userService = userService;
         }
 
         public async Task<bool> CreateTask(TaskCreateDTO taskCreateDTO)
         {
-            var userId = GetUserId();
+            var userId = _userService.GetUserId_LoggedInUser();
 
             var task = _mapper.Map<Task>(taskCreateDTO);
 
@@ -45,7 +35,7 @@ namespace TaskManager.API.Application.Services
 
         public async Task<List<TaskDTO>> GetAllTasksForUser()
         {
-            var userId = GetUserId();
+            var userId = _userService.GetUserId_LoggedInUser();
 
             var tasks = await _taskRepository.GetAllTasksForUser(userId);
 
@@ -65,7 +55,7 @@ namespace TaskManager.API.Application.Services
 
         public async Task<List<TaskDTO>> SearchTask(TaskSearchDTO taskSearchDTO)
         {
-            var userId = GetUserId();
+            var userId = _userService.GetUserId_LoggedInUser();
 
             var tasks = await _taskRepository.SearchTask(userId, taskSearchDTO);
 
@@ -76,7 +66,7 @@ namespace TaskManager.API.Application.Services
 
         public async Task<bool> UpdateTask(Guid taskId, TaskUpdateDTO taskUpdateDTO)
         {
-            var userId = GetUserId();
+            var userId = _userService.GetUserId_LoggedInUser();
 
             var result = await _taskRepository.UpdateTask(taskId, userId, taskUpdateDTO);
 
@@ -88,7 +78,7 @@ namespace TaskManager.API.Application.Services
 
         public async Task<bool> DeleteTask(Guid taskId)
         {
-            var userId = GetUserId();
+            var userId = _userService.GetUserId_LoggedInUser();
 
             var result = await _taskRepository.DeleteTask(taskId, userId);
 

@@ -20,7 +20,7 @@ namespace TaskManager.API.Controllers
         {
             await _userService.CreateUser(userCreateDTO);
 
-            return Ok();
+            return Ok(new { message = "User registered successfully." });
         }
 
         [HttpGet("email/{email}")]
@@ -55,21 +55,21 @@ namespace TaskManager.API.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("delete/{userid}")]
-        public async Task<IActionResult> DeleteUser([FromRoute] Guid userId)
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteUser()
         {
-            await _userService.DeleteUser(userId);
+            await _userService.DeleteUser();
 
-            return Ok();
+            return Ok(new { message = "User was deleted successfully" });
         }
 
-        [HttpPut("update/{userId}")]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdateUser
-            ([FromRoute] Guid userId, [FromBody] UserUpdateDTO userUpdateDTO)
+            ([FromBody] UserUpdateDTO userUpdateDTO)
         {
-            await _userService.UpdateUser(userId, userUpdateDTO);
+            await _userService.UpdateUser(userUpdateDTO);
 
-            return Ok();
+            return Ok(new { message = "User was updated successfully" });
         }
     }
 }

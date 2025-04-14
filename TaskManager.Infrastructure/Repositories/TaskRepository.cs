@@ -2,7 +2,6 @@
 using System.Data;
 using TaskManager.API.DTOs.Task;
 using TaskManager.API.Interfaces.Repositories;
-using TaskManager.API.Models;
 using Task = TaskManager.API.Models.Task;
 
 
@@ -20,8 +19,8 @@ namespace TaskManager.API.Repositories
         public async Task<int> CreateTask(Task task)
         {
             var sql = @"INSERT INTO Task
-                        (Id, UserId, Title, Description, DueDate, CategoryId, PriorityId, IsCompleted)
-                        VALUES (@Id, @UserId, @Title, @Description, @DueDate, @CategoryId, @PriorityId, @IsCompleted)";
+                        (Id, UserId, Title, Description, DueDate, Priority, IsCompleted)
+                        VALUES (@Id, @UserId, @Title, @Description, @DueDate, @Priority, @IsCompleted)";
 
             var effectedRows = await _db.ExecuteAsync(sql, task);
 
@@ -31,26 +30,17 @@ namespace TaskManager.API.Repositories
         public async Task<List<Task>> GetAllTasksForUser(Guid userId)
         {
             var sql = @"SELECT * FROM Task 
-                        LEFT JOIN Priority ON Task.PriorityId = Priority.Id
-                        LEFT JOIN Category ON Task.CategoryId = Category.Id
                         WHERE Task.UserId = @UserId;";
 
-            var result = await _db.QueryAsync<Task, Priority, Category, Task>
-                (sql, (task, priority, category) =>
-                {
-                    task.Priority = priority;
-                    task.Category = category;
-
-                    return task;
-                },
-                new { UserId = userId.ToString() });
+            var result = await _db.QueryAsync<Task>(sql, new { UserId = userId.ToString() });
 
             return result.ToList();
         }
 
         public async Task<Task?> GetTaskById(Guid taskId)
         {
-            var sql = @"SELECT * FROM Task WHERE Id = @Id;";
+            var sql = @"SELECT * FROM Task
+                        WHERE Id = @Id;";
 
             var result = await _db.QueryFirstOrDefaultAsync<Task>(sql, new { Id = taskId.ToString() });
 
@@ -60,9 +50,7 @@ namespace TaskManager.API.Repositories
         public async Task<List<Task>> SearchTask(Guid userId, TaskSearchDTO searchDTO)
         {
             var sql = @"SELECT * FROM Task 
-                        LEFT JOIN Priority ON Task.PriorityId = Priority.Id
-                        LEFT JOIN Category ON Task.CategoryId = Category.Id
-                        WHERE Task.UserId = @UserId";
+                        WHERE UserId = @UserId";
 
             var parameters = new DynamicParameters();
             parameters.Add("UserId", userId.ToString());
@@ -85,32 +73,27 @@ namespace TaskManager.API.Repositories
                 parameters.Add("DueDateTo", searchDTO.DueDateTo.Value);
             }
 
-            if (searchDTO.PriorityId.HasValue)
+            if (searchDTO.Priority != null)
             {
-                sql += " AND PriorityId = @PriorityId";
-                parameters.Add("PriorityId", searchDTO.PriorityId.ToString());
+                sql += " AND Priority = @Priority";
+                parameters.Add("Priority", searchDTO.Priority);
             }
 
-            if (searchDTO.CategoryId.HasValue)
-            {
-                sql += " AND CategoryId = @CategoryId";
-                parameters.Add("CategoryId", searchDTO.CategoryId.ToString());
-            }
             if (searchDTO.IsCompleted.HasValue)
             {
                 sql += " AND IsCompleted = @IsCompleted";
                 parameters.Add("IsCompleted", searchDTO.IsCompleted);
             }
 
-            var result = await _db.QueryAsync<Task, Priority, Category, Task>
-                (sql, (task, priority, category) =>
-                {
-                    task.Priority = priority;
-                    task.Category = category;
+            var allowedSortFields = new[] { "DueDate", "Title", "Priority" ,"CreatedAt", "UpdatedAt" };
 
-                    return task;
-                },
-                parameters);
+            if (!string.IsNullOrWhiteSpace(searchDTO.SortBy) && allowedSortFields.Contains(searchDTO.SortBy))
+            {
+                var sortDirection = searchDTO.SortDescending == true ? "DESC" : "ASC";
+                sql += $" ORDER BY Task.{searchDTO.SortBy} {sortDirection}";
+            }
+
+            var result = await _db.QueryAsync<Task>(sql, parameters);
 
             return result.ToList();
         }
@@ -138,16 +121,10 @@ namespace TaskManager.API.Repositories
                 parameters.Add("DueDate", taskUpdateDTO.DueDate);
             }
 
-            if (taskUpdateDTO.PriorityId != null)
+            if (taskUpdateDTO.Priority != null)
             {
-                sqlSnippets.Add("PriorityId = @PriorityId");
-                parameters.Add("PriorityId", taskUpdateDTO.PriorityId);
-            }
-
-            if (taskUpdateDTO.CategoryId != null)
-            {
-                sqlSnippets.Add("CategoryId = @CategoryId");
-                parameters.Add("CategoryId", taskUpdateDTO.CategoryId);
+                sqlSnippets.Add("Priority = @Priority");
+                parameters.Add("Priority", taskUpdateDTO.Priority);
             }
 
             if (taskUpdateDTO.IsCompleted.HasValue)

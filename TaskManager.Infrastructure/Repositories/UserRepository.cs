@@ -63,7 +63,7 @@ namespace TaskManager.API.Repositories
             return user;
         }
 
-        public async Task<int> UpdateUser(Guid userId, string username, string email)
+        public async Task<int> UpdateUser(Guid userId, string? username, string? email)
         {
             var sql = new List<string>();
             var parameters = new DynamicParameters();
@@ -71,19 +71,19 @@ namespace TaskManager.API.Repositories
             if (!string.IsNullOrEmpty(username))
             {
                 sql.Add("Username = @Username");
-                parameters.Add("username", username);
+                parameters.Add("Username", username);
             }
             if (!string.IsNullOrEmpty(email))
             {
                 sql.Add("Email = @Email");
-                parameters.Add("email", email);
+                parameters.Add("Email", email);
             }
 
             if (sql.Count == 0)
                 return 0;
 
             var updateQuery = $"UPDATE User SET {string.Join(", ", sql)} WHERE Id = @Id";
-            parameters.Add("Id", userId);
+            parameters.Add("Id", userId.ToString());
 
             return await _db.ExecuteAsync(updateQuery, parameters);
         }
