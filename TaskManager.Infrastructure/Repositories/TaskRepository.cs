@@ -20,8 +20,8 @@ namespace TaskManager.API.Repositories
         public async Task<int> CreateTask(Task task)
         {
             var sql = @"INSERT INTO Task
-                        (Id, UserId, Title, Description, DueDate, CategoryId, PriorityId, IsCompleted)
-                        VALUES (@Id, @UserId, @Title, @Description, @DueDate, @CategoryId, @PriorityId, @IsCompleted)";
+                        (Id, UserId, Title, Description, DueDate, PriorityId, IsCompleted)
+                        VALUES (@Id, @UserId, @Title, @Description, @DueDate, @PriorityId, @IsCompleted)";
 
             var effectedRows = await _db.ExecuteAsync(sql, task);
 
@@ -32,14 +32,12 @@ namespace TaskManager.API.Repositories
         {
             var sql = @"SELECT * FROM Task 
                         LEFT JOIN Priority ON Task.PriorityId = Priority.Id
-                        LEFT JOIN Category ON Task.CategoryId = Category.Id
                         WHERE Task.UserId = @UserId;";
 
-            var result = await _db.QueryAsync<Task, Priority, Category, Task>
-                (sql, (task, priority, category) =>
+            var result = await _db.QueryAsync<Task, Priority, Task>
+                (sql, (task, priority) =>
                 {
                     task.Priority = priority;
-                    task.Category = category;
 
                     return task;
                 },
@@ -50,18 +48,27 @@ namespace TaskManager.API.Repositories
 
         public async Task<Task?> GetTaskById(Guid taskId)
         {
-            var sql = @"SELECT * FROM Task WHERE Id = @Id;";
+            var sql = @"SELECT * FROM Task
+                LEFT JOIN Priority ON Task.PriorityId = Priority.Id
+                WHERE Task.Id = @Id;";
 
-            var result = await _db.QueryFirstOrDefaultAsync<Task>(sql, new { Id = taskId.ToString() });
+            var result = await _db.QueryAsync<Task, Priority, Task>(
+                sql,
+                (task, priority) =>
+                {
+                    task.Priority = priority;
+                    return task;
+                },
+                new { Id = taskId.ToString() }
+            );
 
-            return result;
+            return result.FirstOrDefault();
         }
 
         public async Task<List<Task>> SearchTask(Guid userId, TaskSearchDTO searchDTO)
         {
             var sql = @"SELECT * FROM Task 
                         LEFT JOIN Priority ON Task.PriorityId = Priority.Id
-                        LEFT JOIN Category ON Task.CategoryId = Category.Id
                         WHERE Task.UserId = @UserId";
 
             var parameters = new DynamicParameters();
@@ -91,22 +98,16 @@ namespace TaskManager.API.Repositories
                 parameters.Add("PriorityId", searchDTO.PriorityId.ToString());
             }
 
-            if (searchDTO.CategoryId.HasValue)
-            {
-                sql += " AND CategoryId = @CategoryId";
-                parameters.Add("CategoryId", searchDTO.CategoryId.ToString());
-            }
             if (searchDTO.IsCompleted.HasValue)
             {
                 sql += " AND IsCompleted = @IsCompleted";
                 parameters.Add("IsCompleted", searchDTO.IsCompleted);
             }
 
-            var result = await _db.QueryAsync<Task, Priority, Category, Task>
-                (sql, (task, priority, category) =>
+            var result = await _db.QueryAsync<Task, Priority, Task>
+                (sql, (task, priority) =>
                 {
                     task.Priority = priority;
-                    task.Category = category;
 
                     return task;
                 },
@@ -142,12 +143,6 @@ namespace TaskManager.API.Repositories
             {
                 sqlSnippets.Add("PriorityId = @PriorityId");
                 parameters.Add("PriorityId", taskUpdateDTO.PriorityId);
-            }
-
-            if (taskUpdateDTO.CategoryId != null)
-            {
-                sqlSnippets.Add("CategoryId = @CategoryId");
-                parameters.Add("CategoryId", taskUpdateDTO.CategoryId);
             }
 
             if (taskUpdateDTO.IsCompleted.HasValue)

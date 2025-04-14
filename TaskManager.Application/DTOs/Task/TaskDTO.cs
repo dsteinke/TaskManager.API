@@ -11,7 +11,6 @@
         public DateTime UpdatedAt { get; set; }
         public bool IsCompleted { get; set; }
 
-        public List<CategoryDTO?> Category { get; set; }
         public PriorityDTO? Priority { get; set; }
     }
 }

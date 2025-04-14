@@ -7,7 +7,6 @@
         public DateTime? DueDateFrom { get; set; }
         public DateTime? DueDateTo { get; set; }
         public Guid? PriorityId { get; set; }
-        public Guid? CategoryId { get; set; }
         public string? SortBy { get; set; }
         public bool? SortDescending { get; set; }
     }

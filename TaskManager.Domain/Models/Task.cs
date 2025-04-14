@@ -9,11 +9,9 @@
         public DateTime? DueDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public string CategoryId { get; set; }
         public string PriorityId { get; set; }
         public bool IsCompleted { get; set; }
 
-        public Category Category { get; set; }
         public Priority Priority { get; set; }
     }
 }
