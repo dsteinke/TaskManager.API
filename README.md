@@ -22,9 +22,6 @@ A lightweight, modern task management API built with .NET 8, leveraging Clean Ar
 ### **Task Management**
 - CRUD Operations for Tasks
 
-### **User Management**
-- CRUD Operations for Users
-
 ### **API Documentation**
 - Swagger UI
 - Postman Collection with Endpoints in Solution
