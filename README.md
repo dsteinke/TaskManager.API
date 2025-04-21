@@ -1,4 +1,5 @@
 # TaskManager.API
+A lightweight, modern task management API built with .NET 8, leveraging Clean Architecture, Dapper, and JWT Authentication.
 
 ## Technologies
 - **.NET 8**
