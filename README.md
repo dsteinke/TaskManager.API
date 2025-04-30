@@ -8,6 +8,7 @@ A lightweight, modern task management API built with .NET 8, leveraging Clean Ar
 - **JWT Authentication**
 - **Swagger**
 - **AutoMapper**
+- **Containerization with Docker**
 
 ## Architecture
 - Repository Pattern with Clean Architecture
