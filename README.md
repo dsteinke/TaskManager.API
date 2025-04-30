@@ -31,7 +31,6 @@ A lightweight, modern task management API built with .NET 8, leveraging Clean Ar
 - Postman Collection with Endpoints in Solution (under TaskManager.API)
 
 ## To do:
-- Containerization with Docker
 - Setup CI/CD pipeline
 
 Created by dsteinke
