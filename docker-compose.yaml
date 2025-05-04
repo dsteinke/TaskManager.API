@@ -1,0 +1,36 @@
+networks:
+    taskmanager-network:
+        driver: bridge
+
+services:
+    taskmanager:
+        build: .
+        container_name: taskmanager-api-docker
+        ports:
+            - "8080:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Docker
+            - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Username=postgres;Password=start.321;Database=taskmanager
+        depends_on:
+            - db
+        networks:
+            - taskmanager-network
+
+    db: 
+        image: postgres
+        container_name: taskmanager-postgres
+        environment:
+            - POSTGRES_DB=taskmanager
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=start.321
+        volumes: 
+            - pgdata:/var/lib/postgresql/data
+            - ./taskmanager-db.sql:/docker-entrypoint-initdb.d/taskmanager-db.sql        
+        ports:
+            - "5442:5432"
+        restart: always
+        networks:
+            - taskmanager-network
+
+volumes:
+    pgdata:
