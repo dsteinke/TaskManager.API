@@ -15,6 +15,11 @@ namespace TaskManager.API.Controllers
             _authService = authService;
         }
 
+        /// <summary>
+        /// Signs in user
+        /// </summary>
+        /// <param name="loginDTO"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {

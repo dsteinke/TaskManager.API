@@ -67,6 +67,9 @@ namespace TaskManager.API
                         Array.Empty<string>()
                     }
                 });
+
+                var xmlFile = $"{AppDomain.CurrentDomain.BaseDirectory}{Path.DirectorySeparatorChar}ECommerce_API.xml";
+                c.IncludeXmlComments(xmlFile);
             });
         }
     }
