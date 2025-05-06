@@ -16,7 +16,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<int> CreateUser(User user)
         {
-            var sql = @"INSERT INTO User (Id, Username, Email, PasswordHash)
+            var sql = @"INSERT INTO ""User"" (Id, Username, Email, PasswordHash)
                         VALUES(@Id, @Username, @Email, @PasswordHash)";
 
             var effectedRows = await _db.ExecuteAsync(sql, user);
@@ -26,7 +26,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<List<User>> GetAllUsers()
         {
-            var sql = @"SELECT * FROM User";
+            var sql = @"SELECT * FROM ""User""";
             
             var users = await _db.QueryAsync<User>(sql);
 
@@ -35,7 +35,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<User?> GetUserByEmail(string email)
         {
-            var sql = @"SELECT * FROM User
+            var sql = @"SELECT * FROM ""User""
                         WHERE Email = @Email";
 
             var user = await _db.QueryFirstOrDefaultAsync<User>(sql, new {Email = email});
@@ -45,7 +45,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<User?> GetUserByUsername(string username)
         {
-            var sql = @"SELECT * FROM User
+            var sql = @"SELECT * FROM ""User""
                         WHERE Username = @Username";
 
             var user = await _db.QueryFirstOrDefaultAsync<User>(sql, new { Username = username });
@@ -55,7 +55,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<User?> GetUserById(Guid userId)
         {
-            var sql = @"SELECT * FROM User
+            var sql = @"SELECT * FROM ""User""
                         WHERE Id = @Id";
 
             var user = await _db.QueryFirstOrDefaultAsync<User>(sql, new { Id = userId.ToString() });
@@ -82,7 +82,7 @@ namespace TaskManager.API.Repositories
             if (sql.Count == 0)
                 return 0;
 
-            var updateQuery = $"UPDATE User SET {string.Join(", ", sql)} WHERE Id = @Id";
+            var updateQuery = @$"UPDATE ""User"" SET {string.Join(", ", sql)} WHERE Id = @Id";
             parameters.Add("Id", userId.ToString());
 
             return await _db.ExecuteAsync(updateQuery, parameters);
@@ -90,7 +90,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<int> DeleteUser(Guid userId)
         {
-            var sql = @"DELETE FROM User WHERE Id = @Id";
+            var sql = @"DELETE FROM ""User"" WHERE Id = @Id";
 
             var effectedRows = await _db.ExecuteAsync(sql, new {Id = userId.ToString()});
 

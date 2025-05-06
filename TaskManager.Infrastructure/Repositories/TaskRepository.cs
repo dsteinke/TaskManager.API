@@ -18,7 +18,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<int> CreateTask(Task task)
         {
-            var sql = @"INSERT INTO Task
+            var sql = @"INSERT INTO ""Task""
                         (Id, UserId, Title, Description, DueDate, Priority, IsCompleted)
                         VALUES (@Id, @UserId, @Title, @Description, @DueDate, @Priority, @IsCompleted)";
 
@@ -29,8 +29,8 @@ namespace TaskManager.API.Repositories
 
         public async Task<List<Task>> GetAllTasksForUser(Guid userId)
         {
-            var sql = @"SELECT * FROM Task 
-                        WHERE Task.UserId = @UserId;";
+            var sql = @"SELECT * FROM ""Task"" 
+                        WHERE UserId = @UserId;";
 
             var result = await _db.QueryAsync<Task>(sql, new { UserId = userId.ToString() });
 
@@ -39,7 +39,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<Task?> GetTaskById(Guid taskId)
         {
-            var sql = @"SELECT * FROM Task
+            var sql = @"SELECT * FROM ""Task""
                         WHERE Id = @Id;";
 
             var result = await _db.QueryFirstOrDefaultAsync<Task>(sql, new { Id = taskId.ToString() });
@@ -49,7 +49,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<List<Task>> SearchTask(Guid userId, TaskSearchDTO searchDTO)
         {
-            var sql = @"SELECT * FROM Task 
+            var sql = @"SELECT * FROM ""Task""
                         WHERE UserId = @UserId";
 
             var parameters = new DynamicParameters();
@@ -90,7 +90,7 @@ namespace TaskManager.API.Repositories
             if (!string.IsNullOrWhiteSpace(searchDTO.SortBy) && allowedSortFields.Contains(searchDTO.SortBy))
             {
                 var sortDirection = searchDTO.SortDescending == true ? "DESC" : "ASC";
-                sql += $" ORDER BY Task.{searchDTO.SortBy} {sortDirection}";
+                sql += @$" ORDER BY ""Task"".{searchDTO.SortBy} {sortDirection}";
             }
 
             var result = await _db.QueryAsync<Task>(sql, parameters);
@@ -133,7 +133,7 @@ namespace TaskManager.API.Repositories
                 parameters.Add("IsCompleted", taskUpdateDTO.IsCompleted);
             }
 
-            var sql = $@"UPDATE Task SET {string.Join(", ", sqlSnippets)}
+            var sql = $@"UPDATE ""Task"" SET {string.Join(", ", sqlSnippets)}
                         WHERE Id = @TaskId AND UserId = @UserId";
 
             parameters.Add("TaskId", taskId.ToString());
@@ -146,7 +146,7 @@ namespace TaskManager.API.Repositories
 
         public async Task<int> DeleteTask(Guid taskId, Guid userId)
         {
-            var sql = @"DELETE FROM Task WHERE Id = @TaskId AND UserId = @UserId;";
+            var sql = @"DELETE FROM ""Task"" WHERE Id = @TaskId AND UserId = @UserId;";
 
             var effectedRows = await _db.ExecuteAsync(sql, new
             {

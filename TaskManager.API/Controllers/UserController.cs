@@ -15,6 +15,11 @@ namespace TaskManager.API.Controllers
             _userService = userService;
         }
 
+        /// <summary>
+        /// Creates a new User
+        /// </summary>
+        /// <param name="userCreateDTO"></param>
+        /// <returns></returns>
         [HttpPost("register")]
         public async Task<IActionResult> CreateUser([FromBody] UserCreateDTO userCreateDTO)
         {
@@ -23,6 +28,11 @@ namespace TaskManager.API.Controllers
             return Ok(new { message = "User registered successfully." });
         }
 
+        /// <summary>
+        /// Gets user by Email Address
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         [HttpGet("email/{email}")]
         public async Task<IActionResult> GetUserByEmail([FromRoute] string email)
         {
@@ -31,6 +41,11 @@ namespace TaskManager.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets user by userId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpGet("id/{userId}")]
         public async Task<IActionResult> GetUserById([FromRoute] Guid userId)
         {
@@ -39,6 +54,11 @@ namespace TaskManager.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets user by username
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         [HttpGet("username/{username}")]
         public async Task<IActionResult> GetUserByUsername([FromRoute] string username)
         {
@@ -47,6 +67,10 @@ namespace TaskManager.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Returns all users
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("all")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -55,6 +79,10 @@ namespace TaskManager.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Deletes signed in user
+        /// </summary>
+        /// <returns></returns>
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteUser()
         {
@@ -63,6 +91,11 @@ namespace TaskManager.API.Controllers
             return Ok(new { message = "User was deleted successfully" });
         }
 
+        /// <summary>
+        /// Updates user
+        /// </summary>
+        /// <param name="userUpdateDTO"></param>
+        /// <returns></returns>
         [HttpPut("update")]
         public async Task<IActionResult> UpdateUser
             ([FromBody] UserUpdateDTO userUpdateDTO)

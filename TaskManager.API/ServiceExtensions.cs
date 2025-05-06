@@ -5,6 +5,7 @@ using TaskManager.API.Interfaces.Repositories;
 using TaskManager.API.Interfaces.Services;
 using TaskManager.API.Repositories;
 using TaskManager.API.Application.Services;
+using Microsoft.OpenApi.Models;
 
 namespace TaskManager.API
 {
@@ -36,6 +37,40 @@ namespace TaskManager.API
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                     };
                 });
+        }
+
+        public static void ConfigureSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Please enter your Jwt Token (Note: Without prefix 'Bearer ')"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            In = ParameterLocation.Header
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+
+                var xmlFile = $"{AppDomain.CurrentDomain.BaseDirectory}{Path.DirectorySeparatorChar}ECommerce_API.xml";
+                c.IncludeXmlComments(xmlFile);
+            });
         }
     }
 }
